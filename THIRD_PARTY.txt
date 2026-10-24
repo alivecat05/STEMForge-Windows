@@ -1,0 +1,11 @@
+STEMForge is a local orchestration and user interface layer around existing model inference projects.
+Dependency versions resolved by the Windows installer may have additional licenses.
+
+Source and documentation:
+- python-audio-separator 0.47.0: https://github.com/nomadkaraoke/python-audio-separator (MIT)
+- uv: https://github.com/astral-sh/uv (MIT OR Apache-2.0)
+- FFmpeg: https://ffmpeg.org/legal.html (LGPL/GPL varies with binary build)
+- HTDemucs: https://github.com/facebookresearch/demucs (MIT code; verify weights separately)
+- MDX / RoFormer / MDX23C: inspect each model's owner and weight license separately before redistribution or commercial use.
+
+Model weights are NOT shipped inside the archive and are downloaded by the separator engine on demand.

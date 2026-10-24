@@ -1,0 +1,68 @@
+﻿STEMForge 安装与全面测试报告
+日期：2026-10-23 10:53:21 +08:00
+结果：全部计划测试通过。
+
+测试输入：E:\Treasures\LISA - SaWaDiKa (320kbps).mp3
+完整歌曲：174.325 秒；7种模式均使用完整歌曲输出WAV。
+格式及专项补测：从同一首歌35秒处截取10秒，逐模式测试FLAC/MP3。
+本机环境：Windows；NVIDIA GeForce RTX 4060 Laptop GPU（8GB），驱动566.07。
+Python 3.11.17；CUDA 12.6；FFmpeg/FFprobe 9.0.2。
+依赖：audio-separator 0.47.0, torch 2.14.1+cu126, onnxruntime-gpu 1.20.2
+
+模型存储：E:\STEMForge-Windows\data\models
+模型及配置约2.36GiB；已配置模型缓存、输入副本和最终输出均在E盘项目目录中。
+融合推理的临时音轨使用系统临时目录，完成后清理；模型文件始终保存在上述E盘路径。
+原始MP3文件未修改。
+
+模型测试矩阵（WAV=完整歌曲；FLAC/MP3=10秒片段）
+Demucs FT 四轨: WAV通过 / FLAC通过 / MP3通过；每次4轨
+  全曲输出：E:\STEMForge-Windows\data\jobs\95170a6fbd1b\output
+  全曲ZIP：E:\STEMForge-Windows\data\jobs\95170a6fbd1b\STEMForge_95170a6fbd1b_STEMS.zip
+  首次测试耗时：60.2秒（含启动、可能的下载和状态轮询，不是纯推理性能基准）。
+Demucs 6S 六轨: WAV通过 / FLAC通过 / MP3通过；每次6轨
+  全曲输出：E:\STEMForge-Windows\data\jobs\acce1f7b6c5c\output
+  全曲ZIP：E:\STEMForge-Windows\data\jobs\acce1f7b6c5c\STEMForge_acce1f7b6c5c_STEMS.zip
+  首次测试耗时：30.1秒（含启动、可能的下载和状态轮询，不是纯推理性能基准）。
+BS-RoFormer: WAV通过 / FLAC通过 / MP3通过；每次2轨
+  全曲输出：E:\STEMForge-Windows\data\jobs\c51764180bf8\output
+  全曲ZIP：E:\STEMForge-Windows\data\jobs\c51764180bf8\STEMForge_c51764180bf8_STEMS.zip
+  首次测试耗时：270.6秒（含启动、可能的下载和状态轮询，不是纯推理性能基准）。
+MelBand RoFormer: WAV通过 / FLAC通过 / MP3通过；每次2轨
+  全曲输出：E:\STEMForge-Windows\data\jobs\7f6cb075e585\output
+  全曲ZIP：E:\STEMForge-Windows\data\jobs\7f6cb075e585\STEMForge_7f6cb075e585_STEMS.zip
+  首次测试耗时：270.6秒（含启动、可能的下载和状态轮询，不是纯推理性能基准）。
+双 RoFormer 融合: WAV通过 / FLAC通过 / MP3通过；每次2轨
+  全曲输出：E:\STEMForge-Windows\data\jobs\0eb7c8b85169\output
+  全曲ZIP：E:\STEMForge-Windows\data\jobs\0eb7c8b85169\STEMForge_0eb7c8b85169_STEMS.zip
+  首次测试耗时：360.6秒（含启动、可能的下载和状态轮询，不是纯推理性能基准）。
+MDX-Net HQ: WAV通过 / FLAC通过 / MP3通过；每次2轨
+  全曲输出：E:\STEMForge-Windows\data\jobs\7bf28fd9d908\output
+  全曲ZIP：E:\STEMForge-Windows\data\jobs\7bf28fd9d908\STEMForge_7bf28fd9d908_STEMS.zip
+  首次测试耗时：70.2秒（含启动、可能的下载和状态轮询，不是纯推理性能基准）。
+Drum Split 两阶段: WAV通过 / FLAC通过 / MP3通过；每次10轨
+  全曲输出：E:\STEMForge-Windows\data\jobs\9723b6398aed\output
+  全曲ZIP：E:\STEMForge-Windows\data\jobs\9723b6398aed\STEMForge_9723b6398aed_STEMS.zip
+  首次测试耗时：80.2秒（含启动、可能的下载和状态轮询，不是纯推理性能基准）。
+
+实际分离：26次成功；共100条输出。
+全曲7种模式均确认使用CUDA，没有CPU回退。
+专项通过：BS-RoFormer低显存；MDX CPU；M4A输入+自动设备；FLAC输入+自动设备。
+错误恢复通过：损坏MP3被拒绝，队列随后成功处理正常音频。
+CPU错误保留通过：损坏MP3返回失败及非零退出码，未被退出兼容修复误判为成功。
+35项基础与边界测试通过：上传参数、JSON、Range、路径、ZIP CRC、生命周期、持久化、回退、模型编排及CPU退出异常保留等。
+每条音轨检查：预期名称/数量、时长误差≤0.2秒、完整解码、有限且非全零样本、峰值/RMS/削波比例。
+每次输出检查：浏览器试听Range接口、ZIP音轨清单及CRC。
+浏览器实测：整曲人声音轨连续播放36秒，后台轮询未重置播放器。
+重复安装复用检查通过；服务重启后完成任务和音轨可恢复。
+
+本次修复
+- 使用具体Python路径，解决Windows版本链接创建失败。
+- 安装器使用系统代理并放宽下载超时；固定CUDA12.6与匹配的ONNX版本；检查现有环境后复用。
+- 保留音轨名称；后台刷新保留播放器；隐藏未完成输出与临时音频。
+- 修复异常JSON及Range边界响应；保存完整推理日志；显示最近50条任务。
+- Windows CPU/ONNX任务曾在输出后以0xC0000005退出；现在仅在CLI正常返回后刷新日志并结束独立工作进程，真实推理异常仍保留。MDX CPU实测返回码0且音轨检查通过。具体原生故障来源尚未确认。
+- 修正鼓组输出说明：四轨 + kick/snare/toms/hi-hat/ride/crash，共10轨。
+
+范围说明：本报告验证这台机器和指定音频的运行、导出与文件完整性；没有干净参考分轨，因此不作SDR或主观音质排名。
+详细数据：E:\STEMForge-Windows\runtime\test-results
+启动：双击项目start.cmd或桌面STEMForge快捷方式；本地页面 http://127.0.0.1:8765/
